@@ -8,6 +8,7 @@ import atexit
 from Adafruit_CharLCDPlate import Adafruit_CharLCDPlate
 from GlyphSprites import Sprites
 import requests
+import dateutil.parser
 
 lcd = Adafruit_CharLCDPlate()
 atexit.register(lcd.stop)
@@ -23,6 +24,7 @@ while (True):
 
   truck = r['truck']
   navigation = r['navigation']
+  game = r['game']
 
   speed = int(truck['speed'])
   speed_str = str(speed).rjust(3)
@@ -53,13 +55,27 @@ while (True):
   except ZeroDivisionError:
    fuel_percent = 0
 
-  fuel_percent_str = "F" + str(fuel_percent).rjust(3) + "%"
+  # Only 2 chars for fuel
+  if fuel_percent >= 100:
+    fuel_percent = 99
 
-  cruise_control_on = r['truck']['cruiseControlOn']
-  cruise_control_speed = int(r['truck']['cruiseControlSpeed'])
+  fuel_percent_str = "F" + str(fuel_percent).rjust(2) + "%"
+
+  cruise_control_on =truck['cruiseControlOn']
+  cruise_control_speed = int(truck['cruiseControlSpeed'])
   cruise_control_str = str(cruise_control_speed).rjust(3) if cruise_control_on else "OFF"
 
 
+
+  current_time = dateutil.parser.parse(game['time'])
+  rest_time = dateutil.parser.parse(game['nextRestStopTime'])
+  seconds_until_stop = (rest_time - current_time).total_seconds()
+  hours_until_stop = int(seconds_until_stop // 3600)
+  minutes_until_stop = int(seconds_until_stop % 3600) // 60
+
+  time_until_stop_str = str(hours_until_stop).zfill(2) + ':' + str(minutes_until_stop).zfill(2)
+
+
   lcd.clear()
-  lcd.message("%s|%s|%s  %s\n%s   %s"%(speed_limit_str, speed_str, cruise_control_str, gear_str, fuel_percent_str, rpm_str))
+  lcd.message("%s|%s|%s  %s\n%s %s %s"%(speed_limit_str, speed_str, cruise_control_str, gear_str, fuel_percent_str, time_until_stop_str, rpm_str))
   sleep(0.1)
