@@ -1,6 +1,10 @@
 LCD-RGB-Keypad-For-RPi
 ======================
 
+```
+git submodule update --init --recursive
+```
+
 Source code for LCD-RGB-Keypad-For-RPi (can be found on AliExpress store).
 Some improvement of the original code from Adafruit's Raspberry-Pi Python Code Library.
 
