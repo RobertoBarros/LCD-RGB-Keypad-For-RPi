@@ -35,20 +35,25 @@ while (True):
 
   speed_limit = navigation['speedLimit']
   speed_limit_str = str(speed_limit).rjust(3)
+
+  if speed < speed_limit:
+    color = lcd.GREEN
+  elif speed >= speed_limit and speed < speed_limit + (speed_limit * 0.1):
+    color = lcd.YELLOW
+  else:
+    color = lcd.RED
+
   try:
     rpm_percent = int(truck['engineRpm']/truck['engineRpmMax']*100)
   except ZeroDivisionError:
     rpm_percent = 0
   # rpm_percent_str = "RPM" + str(rpm_percent).rjust(3) + "%"
 
-  rpm_percent = 83
-
   rpm_str = '\x00' if rpm_percent > 50 else ''
   rpm_str = '\x00\x01' if rpm_percent > 60 else rpm_str
   rpm_str = '\x00\x01\x02' if rpm_percent > 70 else rpm_str
   rpm_str = '\x00\x01\x02\x03' if rpm_percent > 80 else rpm_str
   rpm_str = '\x00\x01\x02\x03\x04' if rpm_percent > 90 else rpm_str
-
 
   try:
    fuel_percent = int(truck['fuel']/truck['fuelCapacity']*100)
@@ -69,13 +74,14 @@ while (True):
 
   current_time = dateutil.parser.parse(game['time'])
   rest_time = dateutil.parser.parse(game['nextRestStopTime'])
-  seconds_until_stop = (rest_time - current_time).total_seconds()
-  hours_until_stop = int(seconds_until_stop // 3600)
-  minutes_until_stop = int(seconds_until_stop % 3600) // 60
+  # seconds_until_stop = (current_time - rest_time).total_seconds()
+  # hours_until_stop = int(seconds_until_stop // 3600)
+  # minutes_until_stop = int(seconds_until_stop % 3600) // 60
 
-  time_until_stop_str = str(hours_until_stop).zfill(2) + ':' + str(minutes_until_stop).zfill(2)
+  time_until_stop_str = str(rest_time.hour).zfill(2) + ':' + str(rest_time.minute).zfill(2)
 
 
   lcd.clear()
   lcd.message("%s|%s|%s  %s\n%s %s %s"%(speed_limit_str, speed_str, cruise_control_str, gear_str, fuel_percent_str, time_until_stop_str, rpm_str))
+  lcd.ledRGB(color)
   sleep(0.1)
