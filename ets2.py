@@ -82,6 +82,6 @@ while (True):
 
 
   lcd.clear()
-  lcd.message("%s|%s|%s  %s\n%s %s %s"%(speed_limit_str, speed_str, cruise_control_str, gear_str, fuel_percent_str, time_until_stop_str, rpm_str))
+  lcd.message("%s|%s|%s  %s\n%s %s %s"%(cruise_control_str, speed_limit_str, speed_str, gear_str, fuel_percent_str, time_until_stop_str, rpm_str))
   lcd.ledRGB(color)
   sleep(0.1)
